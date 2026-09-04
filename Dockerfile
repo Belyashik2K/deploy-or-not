@@ -26,17 +26,16 @@ FROM base AS builder
 RUN uv sync --frozen --no-dev
 
 
-FROM python:3.13-slim AS prod
+FROM python:3.14-slim AS prod
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH"
 WORKDIR /app
 
 RUN useradd --create-home --uid 1000 deploy-or-not
 
-COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /opt/venv /opt/venv
 COPY . .
-
-ENV PATH="/app/.venv/bin:$PATH"
 
 USER deploy-or-not
 
