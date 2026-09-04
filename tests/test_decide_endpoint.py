@@ -12,7 +12,7 @@ from api.schemas import (
 )
 
 DECIDE_URL = "/api/v1/decide"
-OPENAPI_URL = "/docs/openapi.json/"
+OPENAPI_URL = "/docs/openapi.json"
 
 ALL_DAYS: list[Day] = [
     "monday",
