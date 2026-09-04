@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "django-cors-headers>=4.9.0",
-    "django-modern-rest[msgspec]>=0.14.0",
+    "django-modern-rest[msgspec,openapi,pydantic]>=0.14.0",
     "uvicorn[standard]>=0.52.4",
 ]
 

@@ -15,8 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from dmr.openapi import build_schema
+from dmr.openapi.views import (
+    OpenAPIJsonView,
+    SwaggerView,
+)
+from dmr.routing import Router
 
-# TODO: Add the view function for the "decide" endpoint
+from api.views import DecideController
+
+router = Router(
+    "api/",
+    [
+        path("decide/", DecideController.as_view(), name="decide"),
+    ],
+)
+
+schema = build_schema(router)
+
 urlpatterns = [
-    path("api/decide", ..., name="decide"),
+    router.to_urlpatterns(namespace="api"),
+    path("docs/openapi.json/", OpenAPIJsonView.as_view(schema=schema), name="openapi-json"),
+    path("docs/", SwaggerView.as_view(schema=schema), name="swagger"),
 ]

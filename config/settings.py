@@ -32,7 +32,17 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if not DEB
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
+    "dmr",
     "api",
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {},
+    },
 ]
 
 MIDDLEWARE = [

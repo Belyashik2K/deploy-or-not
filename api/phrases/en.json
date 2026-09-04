@@ -1,0 +1,45 @@
+{
+  "chill": {
+    "normal": {
+      "yes": [
+        "Yeah, go for it.",
+        "Should be fine.",
+        "Sure, why not."
+      ],
+      "no": [
+        "Not today, something feels off.",
+        "Hold off for now."
+      ]
+    },
+    "friday": {
+      "yes": [
+        "Fine, but on your own risk.",
+        "Alright, but I warned you."
+      ],
+      "no": [
+        "It's Friday. Really?",
+        "Absolutely not. Go home."
+      ]
+    }
+  },
+  "savage": {
+    "normal": {
+      "yes": [
+        "Do it, coward. What's the worst that happens.",
+        "Ship it, nobody's reading the changelog anyway."
+      ],
+      "no": [
+        "No. Go write some tests first."
+      ]
+    },
+    "friday": {
+      "yes": [
+        "Bold of you to assume I'd let that happen. But sure."
+      ],
+      "no": [
+        "Friday deploy? Get some help.",
+        "No. Touch grass instead."
+      ]
+    }
+  }
+}
