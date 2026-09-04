@@ -2,26 +2,32 @@ version: '3'
 
 vars:
   PROJECT: '{{default "deploy-or-not" .PROJECT}}'
-  ENV: '{{default "local" .ENV}}'
+  ENV: '{{default "dev" .ENV}}'
   SERVICE: '{{default "" .SERVICE}}'
   BUILD: '{{default "0" .BUILD}}'
   DETACH: '{{default "1" .DETACH}}'
   TAIL: '{{default "100" .TAIL}}'
+  TRAEFIK_MODE: '{{default "COMPOSE" .TRAEFIK_MODE}}'
 
 
   MODE_FILE:
     sh: |
-      if [ "{{.ENV}}" = "prod" ]; then
-        echo "docker-compose.prod.yml"
-      else
-        echo "docker-compose.dev.yml"
+      if [ "{{.ENV}}" = "dev" ]; then
+        echo "-f docker-compose.dev.yml"
+      fi
+
+  TRAEFIK_FILE:
+    sh: |
+      if [ "{{.TRAEFIK_MODE}}" = "COMPOSE" ]  && [ "{{.ENV}}" = "prod" ]; then
+        echo "-f docker-compose.traefik.yml"
       fi
 
   COMPOSE_ARGS: >-
     -p {{.PROJECT}}
     --env-file .env
     -f docker-compose.yml
-    -f {{.MODE_FILE}}
+    {{.MODE_FILE}}
+    {{.TRAEFIK_FILE}}
 
   UP_FLAGS:
     sh: |
