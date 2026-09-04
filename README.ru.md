@@ -123,7 +123,7 @@ API поднимется на `http://localhost:8000`, каталог проек
 task prod BUILD=1 TRAEFIK_MODE=compose
 ```
 
-Голым compose тоже можно — dev, прод и прод со своим Traefik:
+Голым compose тоже можно:
 
 ```bash
 # dev: автоперезагрузка, отладка включена, порт проброшен на хост

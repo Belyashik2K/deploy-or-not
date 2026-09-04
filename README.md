@@ -124,7 +124,7 @@ there, a Traefik container reads the labels instead. If the host has nothing yet
 task prod BUILD=1 TRAEFIK_MODE=compose
 ```
 
-Plain compose works too — dev, production, and production carrying its own Traefik:
+Plain compose works too:
 
 ```bash
 # dev: hot reload, debug on, port on the host
