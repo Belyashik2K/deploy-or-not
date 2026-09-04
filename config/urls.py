@@ -23,15 +23,16 @@ from dmr.openapi.views import (
 from dmr.routing import Router
 
 from api.views import DecideController
+from config.openapi import openapi_config
 
 router = Router(
-    "api/",
+    "api/v1/",
     [
-        path("decide/", DecideController.as_view(), name="decide"),
+        path("decide", DecideController.as_view(), name="decide"),
     ],
 )
 
-schema = build_schema(router)
+schema = build_schema(router, config=openapi_config)
 
 urlpatterns = [
     router.to_urlpatterns(namespace="api"),
