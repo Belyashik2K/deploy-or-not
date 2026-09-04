@@ -4,7 +4,7 @@ from pathlib import Path
 
 from api.schemas import Lang
 
-PHRASES_DIR = Path(__file__).parent
+PHRASES_DIR = Path(__file__).parent / "data"
 
 PHRASES_ANNOTATION = dict[str, dict[str, dict[str, list[str]]]]
 
