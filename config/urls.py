@@ -14,6 +14,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.http import (
+    HttpRequest,
+    HttpResponseRedirect,
+)
+from django.shortcuts import redirect
 from django.urls import path
 from dmr.openapi import build_schema
 from dmr.openapi.views import (
@@ -24,6 +29,11 @@ from dmr.routing import Router
 
 from api.views import DecideController
 from config.openapi import openapi_config
+
+
+def handler404(request: HttpRequest, exception: Exception) -> HttpResponseRedirect:
+    return redirect("docs/")
+
 
 router = Router(
     "api/v1/",
