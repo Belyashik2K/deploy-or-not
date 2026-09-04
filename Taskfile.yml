@@ -7,7 +7,7 @@ vars:
   BUILD: '{{default "0" .BUILD}}'
   DETACH: '{{default "1" .DETACH}}'
   TAIL: '{{default "100" .TAIL}}'
-  TRAEFIK_MODE: '{{default "COMPOSE" .TRAEFIK_MODE}}'
+  TRAEFIK_MODE: '{{default "external" .TRAEFIK_MODE}}'
 
 
   MODE_FILE:
@@ -18,7 +18,7 @@ vars:
 
   TRAEFIK_FILE:
     sh: |
-      if [ "{{.TRAEFIK_MODE}}" = "COMPOSE" ]  && [ "{{.ENV}}" = "prod" ]; then
+      if [ "{{.TRAEFIK_MODE}}" = "compose" ]  && [ "{{.ENV}}" = "prod" ]; then
         echo "-f docker-compose.traefik.yml"
       fi
 
@@ -120,7 +120,7 @@ tasks:
           ENV: dev
 
   prod:
-    desc: Shortcut for prod up
+    desc: "Shortcut for prod up. TRAEFIK_MODE=compose also brings up Traefik"
     cmds:
       - task: up
         vars:
