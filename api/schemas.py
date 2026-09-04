@@ -20,7 +20,10 @@ class DecideQuery(BaseModel):
     )
     day: Day | None = Field(
         default=None,
-        description="Day of the week for the decision. Default is None, which means the current day will be used."
+        description=(
+            "Day of the week for the decision. "
+            "Default is None, which means the current day will be used."
+        )
     )
     mood: Mood = Field(
         default="chill",

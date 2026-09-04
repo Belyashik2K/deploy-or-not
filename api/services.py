@@ -23,9 +23,10 @@ def decide(query: DecideQuery) -> DecideResponse:
     yes_chance = FRIDAY_YES_CHANCE if is_friday else NORMAL_YES_CHANCE
     decision = random.random() < yes_chance
 
-    day_type = "friday" if is_friday else "normal"
-    outcome = "yes" if decision else "no"
-    phrases = get_phrases(query.lang)[query.mood][day_type][outcome]
+    phrases_file = get_phrases(query.lang)
+    mood_phrases = getattr(phrases_file, query.mood)
+    day_phrases = mood_phrases.friday if is_friday else mood_phrases.normal
+    phrases = day_phrases.yes if decision else day_phrases.no
 
     return DecideResponse(
         decision=decision,
