@@ -38,3 +38,6 @@ README.md
 .mypy_cache/
 .ruff_cache/
 .run/
+
+# Built at image build time
+staticfiles/

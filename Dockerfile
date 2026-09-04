@@ -37,6 +37,10 @@ RUN useradd --create-home --uid 1000 deploy-or-not
 COPY --from=builder /opt/venv /opt/venv
 COPY . .
 
+
+RUN DJANGO_DEBUG=0 python manage.py collectstatic --noinput \
+    && chown -R deploy-or-not:deploy-or-not /app/staticfiles
+
 USER deploy-or-not
 
 EXPOSE 8000

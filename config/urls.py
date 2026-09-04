@@ -17,10 +17,10 @@ Including another URLconf
 
 from django.http import (
     HttpRequest,
-    HttpResponseRedirect,
+    JsonResponse,
 )
-from django.shortcuts import redirect
 from django.urls import path
+from django.views.generic import RedirectView
 from dmr.openapi import build_schema
 from dmr.openapi.views import (
     OpenAPIJsonView,
@@ -32,8 +32,13 @@ from api.views import DecideController
 from config.openapi import openapi_config
 
 
-def handler404(request: HttpRequest, exception: Exception) -> HttpResponseRedirect:
-    return redirect("docs/")
+def handler404(request: HttpRequest, exception: Exception) -> JsonResponse:
+    return JsonResponse(
+        {
+            "detail": "Not found. OpenAPI docs are available at /docs and /docs/openapi.json",
+        },
+        status=404,
+    )
 
 
 router = Router(
@@ -47,6 +52,7 @@ schema = build_schema(router, config=openapi_config)
 
 urlpatterns = [
     router.to_urlpatterns(namespace="api"),
+    path("", RedirectView.as_view(pattern_name="swagger"), name="index"),
     path("docs/openapi.json/", OpenAPIJsonView.as_view(schema=schema), name="openapi-json"),
     path("docs/", SwaggerView.as_view(schema=schema), name="swagger"),
 ]
