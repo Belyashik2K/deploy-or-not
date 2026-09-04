@@ -13,7 +13,6 @@ from .services import decide
 
 
 class DecideController(Controller[PydanticSerializer]):
-
     @modify(
         operation_id="decideDeployOrNot",
         summary="Decide whether to deploy",

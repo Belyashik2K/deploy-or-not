@@ -22,8 +22,6 @@ def get_phrases(lang: Lang) -> PhrasesFile:
             f"Please add a corresponding JSON file in the phrases directory."
         ) from e
     except json.JSONDecodeError as e:
-        raise ValueError(
-            f"Failed to parse JSON file for language '{lang}': {e}"
-        ) from e
+        raise ValueError(f"Failed to parse JSON file for language '{lang}': {e}") from e
 
     return PhrasesFile.model_validate(raw_phrases)
