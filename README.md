@@ -21,7 +21,6 @@
 
 - [About](#about)
 - [How it works](#how-it-works)
-- [Quick start](#quick-start)
 - [Usage](#usage)
 - [API reference](#api-reference)
 - [Project structure](#project-structure)
@@ -49,6 +48,18 @@ thought shows up: *"should I, though?"*
 Send a request, get a verdict: true/false, the day it was judged by, and a phrase to justify it to
 your team lead. Or not.
 
+```bash
+curl "https://donaas.belyashik2k.ru/api/v1/decide?day=thursday"
+```
+
+```json
+{
+  "decision": true,
+  "day": "thursday",
+  "message": "Green across the board. Push the button and go get a coffee."
+}
+```
+
 It is all in the odds:
 
 - 85% yes on a normal day — the API is friendly about it, roughly like a junior who still trusts
@@ -62,24 +73,6 @@ It is all in the odds:
 Built with Django and [django-modern-rest](https://pypi.org/project/django-modern-rest/), fully
 typed, no database, no state — just a coin flip with opinions.
 
-## Quick start
-
-One request, one verdict — no key, no setup:
-
-```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?day=thursday"
-```
-
-```json
-{
-  "decision": true,
-  "day": "thursday",
-  "message": "Green across the board. Push the button and go get a coffee."
-}
-```
-
-Swap in `?day=friday&mood=savage` and the tone changes.
-
 ## Usage
 
 ### Online
@@ -87,11 +80,7 @@ Swap in `?day=friday&mood=savage` and the tone changes.
 - **Swagger UI:** <https://donaas.belyashik2k.ru/docs>
 - **OpenAPI schema:** <https://donaas.belyashik2k.ru/docs/openapi.json>
 
-```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?day=friday&mood=savage"
-```
-
-Or from Python, with [httpx](https://www.python-httpx.org/):
+From Python, with [httpx](https://www.python-httpx.org/):
 
 ```python
 import asyncio
@@ -138,8 +127,13 @@ task prod BUILD=1 TRAEFIK_MODE=compose
 Plain compose works too — dev, production, and production carrying its own Traefik:
 
 ```bash
+# dev: hot reload, debug on, port on the host
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# production behind a proxy you already run
 docker compose -f docker-compose.yml up -d --build
+
+# production with Traefik brought up alongside it
 docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
 ```
 

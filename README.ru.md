@@ -21,7 +21,6 @@
 
 - [О проекте](#о-проекте)
 - [Как это работает](#как-это-работает)
-- [Быстрый старт](#быстрый-старт)
 - [Как пользоваться](#как-пользоваться)
 - [Описание API](#описание-api)
 - [Структура проекта](#структура-проекта)
@@ -49,6 +48,18 @@
 Отправляете запрос — получаете вердикт: true/false, день, по которому судили, и фразу, которой
 можно оправдаться (или нет) перед тимлидом.
 
+```bash
+curl "https://donaas.belyashik2k.ru/api/v1/decide?lang=ru&day=thursday"
+```
+
+```json
+{
+  "decision": true,
+  "day": "thursday",
+  "message": "Всё зелёное, тесты прошли, звёзды сошлись. Жми кнопку."
+}
+```
+
 Вся суть — в вероятностях:
 
 - 85% «да» в обычный день — API настроено доброжелательно, почти как джун, который ещё всем верит.
@@ -61,24 +72,6 @@
 Написано на Django и [django-modern-rest](https://pypi.org/project/django-modern-rest/), полностью
 типизировано, без базы и без состояния — просто подбрасывание монетки, но с характером.
 
-## Быстрый старт
-
-Один запрос — один вердикт, без ключей и настройки:
-
-```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?lang=ru&day=thursday"
-```
-
-```json
-{
-  "decision": true,
-  "day": "thursday",
-  "message": "Го. Ты даже тесты написал, я почти горжусь."
-}
-```
-
-Замените на `&day=friday&mood=savage` — и тон поменяется.
-
 ## Как пользоваться
 
 ### Онлайн
@@ -86,11 +79,7 @@ curl "https://donaas.belyashik2k.ru/api/v1/decide?lang=ru&day=thursday"
 - **Swagger UI:** <https://donaas.belyashik2k.ru/docs>
 - **OpenAPI-схема:** <https://donaas.belyashik2k.ru/docs/openapi.json>
 
-```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?day=friday&mood=savage"
-```
-
-Или из Python, через [httpx](https://www.python-httpx.org/):
+Из Python, через [httpx](https://www.python-httpx.org/):
 
 ```python
 import asyncio
@@ -137,8 +126,13 @@ task prod BUILD=1 TRAEFIK_MODE=compose
 Голым compose тоже можно — dev, прод и прод со своим Traefik:
 
 ```bash
+# dev: автоперезагрузка, отладка включена, порт проброшен на хост
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# прод за прокси, который у вас уже поднят
 docker compose -f docker-compose.yml up -d --build
+
+# прод, поднимающий Traefik вместе с собой
 docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
 ```
 
