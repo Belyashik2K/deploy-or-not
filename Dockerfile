@@ -5,11 +5,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
 
 WORKDIR /app
 
