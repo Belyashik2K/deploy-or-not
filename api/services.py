@@ -1,8 +1,9 @@
 import random
-from datetime import datetime
 from typing import (
     Final,
 )
+
+from django.utils import timezone
 
 from .phrases.loader import (
     get_phrases,
@@ -17,7 +18,7 @@ NORMAL_YES_CHANCE: Final[float] = 0.85
 
 
 def decide(query: DecideQuery) -> DecideResponse:
-    resolved_day: str = (query.day or datetime.now().strftime("%A")).lower()
+    resolved_day: str = (query.day or timezone.localtime().strftime("%A")).lower()
     is_friday = resolved_day == "friday"
 
     yes_chance = FRIDAY_YES_CHANCE if is_friday else NORMAL_YES_CHANCE

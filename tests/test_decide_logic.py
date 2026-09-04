@@ -34,12 +34,12 @@ LANGS: list[Lang] = ["en", "ru"]
 SAMPLE_SIZE = 2000
 
 
-def _frozen_datetime(moment: datetime) -> type:
-    """Stand-in for `datetime` in `api.services`, frozen on a given day."""
+def _frozen_timezone(moment: datetime) -> type:
+    """Stand-in for `django.utils.timezone` in `api.services`, frozen on a given day."""
 
     class Frozen:
         @staticmethod
-        def now() -> datetime:
+        def localtime() -> datetime:
             return moment
 
     return Frozen
@@ -127,7 +127,7 @@ def test_missing_day_falls_back_to_today(
     today: datetime,
     expected_day: Day,
 ) -> None:
-    monkeypatch.setattr(services, "datetime", _frozen_datetime(today))
+    monkeypatch.setattr(services, "timezone", _frozen_timezone(today))
 
     result = decide(DecideQuery())
 
@@ -146,7 +146,7 @@ def test_today_fallback_drives_the_threshold(
     today: datetime,
     expected_decision: bool,
 ) -> None:
-    monkeypatch.setattr(services, "datetime", _frozen_datetime(today))
+    monkeypatch.setattr(services, "timezone", _frozen_timezone(today))
     monkeypatch.setattr(
         "api.services.random.random",
         lambda: (FRIDAY_YES_CHANCE + NORMAL_YES_CHANCE) / 2,
