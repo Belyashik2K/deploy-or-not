@@ -4,8 +4,10 @@ services:
       context: .
       target: prod
     env_file: .env
-    expose:
-      - "8000"
+    environment:
+      - DJANGO_DEBUG=0
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
