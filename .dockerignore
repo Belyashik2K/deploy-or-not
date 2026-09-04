@@ -32,8 +32,20 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Docs / misc
-README.md
+# Docs
+README*.md
+CONTRIBUTING*.md
+LICENSE
+
+# Dev tooling — never used inside the image
+Taskfile.yml
+docker-compose*.yml
+Dockerfile
+.dockerignore
+.github/
+.pre-commit-config.yaml
+
+# Misc
 
 .mypy_cache/
 .ruff_cache/
