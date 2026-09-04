@@ -25,7 +25,7 @@ def decide(query: DecideQuery) -> DecideResponse:
     decision = random.random() < yes_chance
 
     phrases_file = get_phrases(query.lang)
-    mood_phrases = getattr(phrases_file, query.mood)
+    mood_phrases = phrases_file.for_mood(query.mood)
     day_phrases = mood_phrases.friday if is_friday else mood_phrases.normal
     phrases = day_phrases.yes if decision else day_phrases.no
 

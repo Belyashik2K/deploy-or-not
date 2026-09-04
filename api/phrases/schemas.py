@@ -1,7 +1,11 @@
+from typing import assert_never
+
 from pydantic import (
     BaseModel,
     Field,
 )
+
+from api.schemas import Mood
 
 
 class PhraseSet(BaseModel):
@@ -17,3 +21,11 @@ class MoodPhrases(BaseModel):
 class PhrasesFile(BaseModel):
     chill: MoodPhrases = Field(description="Phrases for a chill mood.")
     savage: MoodPhrases = Field(description="Phrases for a savage mood.")
+
+    def for_mood(self, mood: Mood) -> MoodPhrases:
+        match mood:
+            case "chill":
+                return self.chill
+            case "savage":
+                return self.savage
+        assert_never(mood)
