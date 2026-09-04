@@ -30,7 +30,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if not DEB
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.staticfiles",  # можно убрать вообще, если ничего не отдаёшь статикой
+    "django.contrib.staticfiles",
     "corsheaders",
     "api",
 ]
@@ -40,6 +40,9 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
+
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 ROOT_URLCONF = 'config.urls'
 

@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      target: prod
+    expose:
+      - "8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.deploy-or-not.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.deploy-or-not.entrypoints=websecure"
+      - "traefik.http.routers.deploy-or-not.tls.certresolver=letsencrypt"
+      - "traefik.http.services.deploy-or-not.loadbalancer.server.port=8000"
+      - "traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.average=10"
+      - "traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.burst=20"
+      - "traefik.http.routers.deploy-or-not.middlewares=deploy-or-not-ratelimit"
+    networks:
+      - traefik
+
+  traefik:
+    image: traefik:v3.7
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    restart: unless-stopped
+    networks:
+      - traefik
+
+networks:
+  traefik:
+
+volumes:
+  letsencrypt:
