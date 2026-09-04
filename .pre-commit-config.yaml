@@ -24,4 +24,13 @@ repos:
         args: [ "--fix", "--show-fixes" ]
         files: ^(app|tests)/
       - id: ruff-format
-        files: ^(app|tests)/
+        files: ^(api|tests|config)/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - django-stubs
+          - pydantic
+        args: [ --config-file=pyproject.toml ]
