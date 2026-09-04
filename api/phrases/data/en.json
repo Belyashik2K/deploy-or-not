@@ -91,6 +91,28 @@
         "Not now. The weekend is short and incidents are long.",
         "Nope. Read-only Friday is not a policy, it is a lifestyle."
       ]
+    },
+    "weekend": {
+      "yes": [
+        "It's the weekend, so nobody's watching. That cuts both ways, but sure, go.",
+        "Traffic is basically zero right now. If it breaks, it breaks quietly.",
+        "Fine. Deploy, verify, close the laptop. In that order, and no bonus refactors.",
+        "Green light, but set a timer. One hour, then the weekend gets its afternoon back.",
+        "Go ahead. Just remember nobody else is around to help you roll it back.",
+        "Low stakes today. Ship it and go do something that isn't a screen.",
+        "Sure. Small window, small change, small blast radius. Keep all three small.",
+        "Approved, on one condition: you already know how to undo it."
+      ],
+      "no": [
+        "It's the weekend. The bug will still be there Monday, and so will you.",
+        "No. Nothing about this is more important than a day off.",
+        "Not today. Deploying alone on a Saturday is how weekends get eaten.",
+        "Let it wait. Monday-you will read this diff with much better eyes.",
+        "No. Whatever it is, it survived until the weekend — it can survive past it.",
+        "Close the laptop. Prod is fine, you're the one at risk here.",
+        "Nope. There's no one on call, and the one on call is you.",
+        "It can wait 48 hours. Almost everything can, it just doesn't say so out loud."
+      ]
     }
   },
   "savage": {
@@ -184,6 +206,28 @@
         "No. It is just a config change is the opening line of many horror stories.",
         "Nope. Freeze the branch, free the weekend.",
         "No. Go be a person for two days, the servers will not miss you."
+      ]
+    },
+    "weekend": {
+      "yes": [
+        "Sure, ship it. Nobody's here to witness it anyway, including anyone who could help.",
+        "Go on. Ruin your own Saturday, it's a classic.",
+        "Fine. Deploy. Then explain to whoever you live with what a rollback is.",
+        "Yes, technically. Also yes, technically, you could be outside right now.",
+        "Ship it. Traffic is zero, so at least the incident will be intimate.",
+        "Approved. Enjoy debugging with no reviewers, no metrics watchers, no mercy.",
+        "Do it. Weekend deploys are just weekday deploys with fewer witnesses.",
+        "Yeah, whatever. It's your weekend to set on fire."
+      ],
+      "no": [
+        "It's the weekend. Touch grass, not prod.",
+        "No. This is a personal problem now, not an engineering one.",
+        "Absolutely not. Go outside, the deploy will be there when you get back.",
+        "Denied. The only thing you should be deploying today is a beach towel.",
+        "No. Nobody asked you to work today, and yet here you are.",
+        "Hard no. You are one command away from a two-day incident with a one-person team.",
+        "Nope. Whatever this is, it can wait until people are paid to care.",
+        "No. Log off. This is an intervention."
       ]
     }
   }

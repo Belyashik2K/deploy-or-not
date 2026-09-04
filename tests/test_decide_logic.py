@@ -15,6 +15,8 @@ from api.schemas import (
 from api.services import (
     FRIDAY_YES_CHANCE,
     NORMAL_YES_CHANCE,
+    WEEKEND_YES_CHANCE,
+    _day_kind,
     decide,
 )
 
@@ -27,7 +29,8 @@ ALL_DAYS: list[Day] = [
     "saturday",
     "sunday",
 ]
-NON_FRIDAY_DAYS = [d for d in ALL_DAYS if d != "friday"]
+WEEKEND_DAYS: list[Day] = ["saturday", "sunday"]
+WORKDAYS: list[Day] = [d for d in ALL_DAYS if d not in {"friday", *WEEKEND_DAYS}]
 MOODS: list[Mood] = ["chill", "savage"]
 LANGS: list[Lang] = ["en", "ru"]
 
@@ -52,6 +55,14 @@ def _yes_ratio(day: Day, *, seed: int = 20260904, size: int = SAMPLE_SIZE) -> fl
     return yes / size
 
 
+@pytest.mark.parametrize("day", WORKDAYS)
+def test_workdays_mostly_say_yes(day: Day) -> None:
+    ratio = _yes_ratio(day)
+
+    assert ratio > 0.5
+    assert ratio == pytest.approx(NORMAL_YES_CHANCE, abs=0.05)
+
+
 def test_friday_mostly_says_no() -> None:
     ratio = _yes_ratio("friday")
 
@@ -59,24 +70,21 @@ def test_friday_mostly_says_no() -> None:
     assert ratio == pytest.approx(FRIDAY_YES_CHANCE, abs=0.05)
 
 
-@pytest.mark.parametrize("day", NON_FRIDAY_DAYS)
-def test_other_days_mostly_say_yes(day: Day) -> None:
+@pytest.mark.parametrize("day", WEEKEND_DAYS)
+def test_weekend_says_no_even_more_than_friday(day: Day) -> None:
     ratio = _yes_ratio(day)
 
-    assert ratio > 0.5
-    assert ratio == pytest.approx(NORMAL_YES_CHANCE, abs=0.05)
+    assert ratio < _yes_ratio("friday")
+    assert ratio == pytest.approx(WEEKEND_YES_CHANCE, abs=0.05)
 
 
-@pytest.mark.parametrize("day", NON_FRIDAY_DAYS)
-def test_friday_is_stricter_than_any_other_day(day: Day) -> None:
-    friday_ratio = _yes_ratio("friday")
-    other_ratio = _yes_ratio(day)
-
-    assert friday_ratio < other_ratio
+@pytest.mark.parametrize("day", WORKDAYS)
+def test_friday_is_stricter_than_any_workday(day: Day) -> None:
+    assert _yes_ratio("friday") < _yes_ratio(day)
 
 
-def test_friday_chance_is_lower_than_normal_chance() -> None:
-    assert 0 <= FRIDAY_YES_CHANCE < NORMAL_YES_CHANCE <= 1
+def test_chances_are_ordered_weekend_friday_normal() -> None:
+    assert 0 <= WEEKEND_YES_CHANCE < FRIDAY_YES_CHANCE < NORMAL_YES_CHANCE <= 1
 
 
 @pytest.mark.parametrize(
@@ -86,6 +94,8 @@ def test_friday_chance_is_lower_than_normal_chance() -> None:
         ("friday", FRIDAY_YES_CHANCE + 0.01, False),
         ("monday", NORMAL_YES_CHANCE - 0.01, True),
         ("monday", NORMAL_YES_CHANCE + 0.01, False),
+        ("saturday", WEEKEND_YES_CHANCE - 0.01, True),
+        ("saturday", WEEKEND_YES_CHANCE + 0.01, False),
     ],
 )
 def test_decision_follows_the_threshold(
@@ -162,8 +172,7 @@ def test_today_fallback_drives_the_threshold(
 @pytest.mark.parametrize("day", ALL_DAYS)
 def test_message_comes_from_the_matching_bucket(lang: Lang, mood: Mood, day: Day) -> None:
     query = DecideQuery(lang=lang, mood=mood, day=day)
-    mood_phrases = getattr(get_phrases(lang), mood)
-    day_phrases = mood_phrases.friday if day == "friday" else mood_phrases.normal
+    day_phrases = get_phrases(lang).for_mood(mood).for_kind(_day_kind(day))
 
     result = decide(query)
 
@@ -187,14 +196,13 @@ def test_languages_do_not_leak_into_each_other(mood: Mood) -> None:
 
 
 @pytest.mark.parametrize("day", ALL_DAYS)
-def test_friday_and_normal_phrase_pools_are_distinct(day: Day) -> None:
+def test_phrase_pool_matches_the_kind_of_day(day: Day) -> None:
     random.seed(7)
     query = DecideQuery(day=day)
 
     messages = {decide(query).message for _ in range(200)}
 
-    chill = get_phrases("en").chill
-    pool = chill.friday if day == "friday" else chill.normal
+    pool = get_phrases("en").chill.for_kind(_day_kind(day))
     assert messages <= set(pool.yes) | set(pool.no)
 
 

@@ -30,15 +30,17 @@ Keep a pull request to one topic. If you are changing behaviour, add or adjust a
 ## Adding a language
 
 The most useful contribution here is a new locale. Phrases are plain JSON, one file per locale in
-[`api/phrases/data/`](api/phrases/data) — two moods × two day kinds × two decisions, and none of the
-eight lists may be empty:
+[`api/phrases/data/`](api/phrases/data) — two moods × three kinds of day × two decisions, and none
+of the twelve lists may be empty:
 
 ```json
 {
-  "chill":  { "normal": { "yes": ["..."], "no": ["..."] },
-              "friday": { "yes": ["..."], "no": ["..."] } },
-  "savage": { "normal": { "yes": ["..."], "no": ["..."] },
-              "friday": { "yes": ["..."], "no": ["..."] } }
+  "chill":  { "normal":  { "yes": ["..."], "no": ["..."] },
+              "friday":  { "yes": ["..."], "no": ["..."] },
+              "weekend": { "yes": ["..."], "no": ["..."] } },
+  "savage": { "normal":  { "yes": ["..."], "no": ["..."] },
+              "friday":  { "yes": ["..."], "no": ["..."] },
+              "weekend": { "yes": ["..."], "no": ["..."] } }
 }
 ```
 

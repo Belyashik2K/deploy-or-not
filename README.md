@@ -62,10 +62,11 @@ curl "https://donaas.belyashik2k.ru/api/v1/decide?day=thursday"
 
 It is all in the odds:
 
-- 85% yes on a normal day — the API is friendly about it, roughly like a junior who still trusts
+- 85% yes on a working day — the API is friendly about it, roughly like a junior who still trusts
   everyone.
 - 20% yes on Fridays — it turns into the senior who has seen a Friday production incident and
   flinches at a commit named `fix(auth): typo in comment`.
+- 10% yes at the weekend — the lowest odds here, and the phrases mostly suggest going outside.
 - Two moods: `chill` warns you gently, `savage` goes straight for the person.
 - Two languages out of the box — `en` and `ru`, phrases live in a plain JSON file, no magic.
 - No key, no signup, no client — a plain `GET`, and your excuse is ready.

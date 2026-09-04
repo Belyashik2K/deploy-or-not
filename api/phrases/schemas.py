@@ -5,7 +5,10 @@ from pydantic import (
     Field,
 )
 
-from api.schemas import Mood
+from api.schemas import (
+    DayKind,
+    Mood,
+)
 
 
 class PhraseSet(BaseModel):
@@ -14,8 +17,19 @@ class PhraseSet(BaseModel):
 
 
 class MoodPhrases(BaseModel):
-    normal: PhraseSet = Field(description="Phrases for normal days.")
+    normal: PhraseSet = Field(description="Phrases for normal working days.")
     friday: PhraseSet = Field(description="Phrases for Fridays.")
+    weekend: PhraseSet = Field(description="Phrases for Saturdays and Sundays.")
+
+    def for_kind(self, kind: DayKind) -> PhraseSet:
+        match kind:
+            case "normal":
+                return self.normal
+            case "friday":
+                return self.friday
+            case "weekend":
+                return self.weekend
+        assert_never(kind)
 
 
 class PhrasesFile(BaseModel):

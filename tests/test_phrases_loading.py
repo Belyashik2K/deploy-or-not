@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import get_args
 
 import pytest
 from pydantic import ValidationError
@@ -8,11 +9,14 @@ from pytest import MonkeyPatch
 from api.phrases import loader
 from api.phrases.loader import PHRASES_DIR, get_phrases
 from api.phrases.schemas import PhrasesFile
-from api.schemas import Lang
+from api.schemas import (
+    DayKind,
+    Lang,
+)
 
 SUPPORTED_LANGS: list[Lang] = ["en", "ru"]
 MOODS = ["chill", "savage"]
-DAY_KINDS = ["normal", "friday"]
+DAY_KINDS: list[str] = list(get_args(DayKind))
 DECISIONS = ["yes", "no"]
 
 

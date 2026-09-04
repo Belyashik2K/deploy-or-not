@@ -16,6 +16,7 @@ Day = Literal[
     "sunday",
 ]
 Mood = Literal["chill", "savage"]
+DayKind = Literal["normal", "friday", "weekend"]
 
 
 class DecideQuery(BaseModel):

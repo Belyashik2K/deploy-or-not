@@ -9,24 +9,38 @@ from .phrases.loader import (
     get_phrases,
 )
 from .schemas import (
+    DayKind,
     DecideQuery,
     DecideResponse,
 )
 
 FRIDAY_YES_CHANCE: Final[float] = 0.2
 NORMAL_YES_CHANCE: Final[float] = 0.85
+WEEKEND_YES_CHANCE: Final[float] = 0.1
+
+WEEKEND_DAYS: Final[frozenset[str]] = frozenset({"saturday", "sunday"})
+YES_CHANCE: Final[dict[DayKind, float]] = {
+    "normal": NORMAL_YES_CHANCE,
+    "friday": FRIDAY_YES_CHANCE,
+    "weekend": WEEKEND_YES_CHANCE,
+}
+
+
+def _day_kind(day: str) -> DayKind:
+    if day == "friday":
+        return "friday"
+    if day in WEEKEND_DAYS:
+        return "weekend"
+    return "normal"
 
 
 def decide(query: DecideQuery) -> DecideResponse:
     resolved_day: str = (query.day or timezone.localtime().strftime("%A")).lower()
-    is_friday = resolved_day == "friday"
+    kind = _day_kind(resolved_day)
 
-    yes_chance = FRIDAY_YES_CHANCE if is_friday else NORMAL_YES_CHANCE
-    decision = random.random() < yes_chance
+    decision = random.random() < YES_CHANCE[kind]
 
-    phrases_file = get_phrases(query.lang)
-    mood_phrases = phrases_file.for_mood(query.mood)
-    day_phrases = mood_phrases.friday if is_friday else mood_phrases.normal
+    day_phrases = get_phrases(query.lang).for_mood(query.mood).for_kind(kind)
     phrases = day_phrases.yes if decision else day_phrases.no
 
     return DecideResponse(
