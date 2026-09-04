@@ -53,6 +53,6 @@ schema = build_schema(router, config=openapi_config)
 urlpatterns = [
     router.to_urlpatterns(namespace="api"),
     path("", RedirectView.as_view(pattern_name="swagger"), name="index"),
-    path("docs/openapi.json/", OpenAPIJsonView.as_view(schema=schema), name="openapi-json"),
-    path("docs/", SwaggerView.as_view(schema=schema), name="swagger"),
+    path("docs/openapi.json", OpenAPIJsonView.as_view(schema=schema), name="openapi-json"),
+    path("docs", SwaggerView.as_view(schema=schema), name="swagger"),
 ]
