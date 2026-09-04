@@ -1,0 +1,121 @@
+version: '3'
+
+vars:
+  PROJECT: '{{default "deploy-or-not" .PROJECT}}'
+  ENV: '{{default "local" .ENV}}'
+  SERVICE: '{{default "" .SERVICE}}'
+  BUILD: '{{default "0" .BUILD}}'
+  DETACH: '{{default "1" .DETACH}}'
+  TAIL: '{{default "100" .TAIL}}'
+
+
+  MODE_FILE:
+    sh: |
+      if [ "{{.ENV}}" = "prod" ]; then
+        echo "docker-compose.prod.yml"
+      else
+        echo "docker-compose.dev.yml"
+      fi
+
+  COMPOSE_ARGS: >-
+    -p {{.PROJECT}}
+    --env-file .env
+    -f docker-compose.yml
+    -f {{.MODE_FILE}}
+
+  UP_FLAGS:
+    sh: |
+      FLAGS=""
+      if [ "{{.BUILD}}" = "1" ]; then
+        FLAGS="$FLAGS --build"
+      fi
+      if [ "{{.DETACH}}" = "1" ]; then
+        FLAGS="$FLAGS -d"
+      fi
+      echo "$FLAGS"
+
+  SERVICE_ARG:
+    sh: |
+      if [ -n "{{.SERVICE}}" ]; then
+        echo "{{.SERVICE}}"
+      fi
+
+tasks:
+  up:
+    desc: "Start stack. Example: task up ENV=prod BUILD=1 DETACH=0"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} up {{.UP_FLAGS}} {{.SERVICE_ARG}}
+
+  down:
+    desc: "Stop stack. Example: task down ENV=prod"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} down
+
+  restart:
+    desc: "Restart stack or one service. Example: task restart ENV=local SERVICE=backend"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} restart {{.SERVICE_ARG}}
+
+  logs:
+    desc: "Follow logs. Example: task logs ENV=prod SERVICE=traefik TAIL=200"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} logs -f --tail={{.TAIL}} {{.SERVICE_ARG}}
+
+  ps:
+    desc: Show containers
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} ps
+
+  build:
+    desc: "Build services. Example: task build ENV=local SERVICE=app"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} build {{.SERVICE_ARG}}
+
+  stop:
+    desc: Stop services without removing containers
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} stop {{.SERVICE_ARG}}
+
+  start:
+    desc: Start existing stopped services
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} start {{.SERVICE_ARG}}
+
+  rm:
+    desc: Remove stopped service containers
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} rm -f {{.SERVICE_ARG}}
+
+  exec:
+    desc: "Exec into service. Example: task exec ENV=prod SERVICE=app CMD=bash"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} exec {{.SERVICE_ARG}} {{.CMD}}
+
+  config:
+    desc: Render merged docker compose config
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} config
+
+  recreate:
+    desc: "Force recreate. Example: task recreate ENV=prod SERVICE=app"
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} up -d --force-recreate {{.SERVICE_ARG}}
+
+  reset:
+    desc: Down with volumes and orphans
+    cmds:
+      - docker compose {{.COMPOSE_ARGS}} down -v --remove-orphans
+
+  dev:
+    desc: Shortcut for local up
+    cmds:
+      - task: up
+        vars:
+          ENV: dev
+
+  prod:
+    desc: Shortcut for prod up
+    cmds:
+      - task: up
+        vars:
+          ENV: prod
