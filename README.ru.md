@@ -162,7 +162,7 @@ DJANGO_DEBUG=1 uv run python manage.py runserver
 {
   "decision": false,
   "day": "friday",
-  "message": "Пятничный деплой — это уже диагноз."
+  "message": "Нет. Тебе напомнить, что в прошлый раз в этой же ситуации ты написал 'прод лежит, дай и я полежу'?"
 }
 ```
 
