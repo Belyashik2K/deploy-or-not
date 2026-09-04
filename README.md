@@ -16,7 +16,8 @@
 
 </div>
 
-## Contents
+<details>
+<summary><b>Contents</b></summary>
 
 - [About](#about)
 - [How it works](#how-it-works)
@@ -27,6 +28,8 @@
 - [Contributing](#contributing)
 - [Development](#development)
 - [License](#license)
+
+</details>
 
 ## About
 
