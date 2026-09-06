@@ -1,7 +1,12 @@
 [project]
 name = "deploy-or-not"
 version = "1.1.0"
-description = "Add your description here"
+description = """
+Should you deploy today? \
+Deploy-or-Not-as-a-Service (DoNaaS) answers with a verdict and a phrase \
+to justify it — cheerful on most days, \
+deeply sceptical on Fridays. English and Russian, no key required.
+"""
 readme = "README.md"
 
 requires-python = ">=3.14"
