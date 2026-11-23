@@ -1,4 +1,9 @@
 services:
+  app:
+    extends:
+      file: docker-compose.traefik.labels.yml
+      service: app
+
   traefik:
     image: traefik:v3.7
     env_file: .env

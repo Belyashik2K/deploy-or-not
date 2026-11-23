@@ -10,25 +10,6 @@ vars:
   TRAEFIK_MODE: '{{default "external" .TRAEFIK_MODE}}'
 
 
-  MODE_FILE:
-    sh: |
-      if [ "{{.ENV}}" = "dev" ]; then
-        echo "-f docker-compose.dev.yml"
-      fi
-
-  TRAEFIK_FILE:
-    sh: |
-      if [ "{{.TRAEFIK_MODE}}" = "compose" ]  && [ "{{.ENV}}" = "prod" ]; then
-        echo "-f docker-compose.traefik.yml"
-      fi
-
-  COMPOSE_ARGS: >-
-    -p {{.PROJECT}}
-    --env-file .env
-    -f docker-compose.yml
-    {{.MODE_FILE}}
-    {{.TRAEFIK_FILE}}
-
   UP_FLAGS:
     sh: |
       FLAGS=""
@@ -49,66 +30,89 @@ vars:
 tasks:
   up:
     desc: "Start stack. Example: task up ENV=prod BUILD=1 DETACH=0"
+    # Resolve the file list after the dev or prod shortcut passes ENV to up.
+    vars: &compose_vars
+      COMPOSE_ARGS: >-
+        -p {{.PROJECT}}
+        --env-file .env
+        -f docker-compose.yml
+        {{if eq .ENV "dev"}}-f docker-compose.dev.yml
+        {{else if eq .ENV "prod"}}
+        {{if eq .TRAEFIK_MODE "compose"}}-f docker-compose.traefik.compose.yml
+        {{else if eq .TRAEFIK_MODE "shared"}}-f docker-compose.traefik.shared.yml
+        {{end}}{{end}}
     cmds:
       - docker compose {{.COMPOSE_ARGS}} up {{.UP_FLAGS}} {{.SERVICE_ARG}}
 
   down:
     desc: "Stop stack. Example: task down ENV=prod"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} down
 
   restart:
     desc: "Restart stack or one service. Example: task restart ENV=local SERVICE=backend"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} restart {{.SERVICE_ARG}}
 
   logs:
     desc: "Follow logs. Example: task logs ENV=prod SERVICE=traefik TAIL=200"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} logs -f --tail={{.TAIL}} {{.SERVICE_ARG}}
 
   ps:
     desc: Show containers
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} ps
 
   build:
     desc: "Build services. Example: task build ENV=local SERVICE=app"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} build {{.SERVICE_ARG}}
 
   stop:
     desc: Stop services without removing containers
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} stop {{.SERVICE_ARG}}
 
   start:
     desc: Start existing stopped services
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} start {{.SERVICE_ARG}}
 
   rm:
     desc: Remove stopped service containers
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} rm -f {{.SERVICE_ARG}}
 
   exec:
     desc: "Exec into service. Example: task exec ENV=prod SERVICE=app CMD=bash"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} exec {{.SERVICE_ARG}} {{.CMD}}
 
   config:
     desc: Render merged docker compose config
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} config
 
   recreate:
     desc: "Force recreate. Example: task recreate ENV=prod SERVICE=app"
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} up -d --force-recreate {{.SERVICE_ARG}}
 
   reset:
     desc: Down with volumes and orphans
+    vars: *compose_vars
     cmds:
       - docker compose {{.COMPOSE_ARGS}} down -v --remove-orphans
 
@@ -120,7 +124,7 @@ tasks:
           ENV: dev
 
   prod:
-    desc: "Shortcut for prod up. TRAEFIK_MODE=compose also brings up Traefik"
+    desc: "Shortcut for prod up. TRAEFIK_MODE=shared uses the host's Traefik network"
     cmds:
       - task: up
         vars:

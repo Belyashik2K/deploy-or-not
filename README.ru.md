@@ -115,10 +115,21 @@ task dev BUILD=1
 API поднимется на `http://localhost:8000`, каталог проекта примонтирован, так что правки
 подхватываются на лету. Остальное покажет `task --list`.
 
-`ENV=prod` переключает на продовый стек. Он исходит из того, что реверс-прокси уже есть, и просто
-публикует приложение на `127.0.0.1:${APP_PORT}` — nginx или что угодно с хоста проксирует туда,
-а контейнер с Traefik вместо этого читает лейблы. Если на хосте ничего нет, `TRAEFIK_MODE=compose`
-поднимет Traefik рядом с приложением, вместе с сертификатами Let's Encrypt:
+`ENV=prod` переключает на продовый стек. По умолчанию он публикует приложение на
+`127.0.0.1:${APP_PORT}` без меток Traefik. Настройте маршрутизацию и ограничение частоты
+запросов в прокси, передавайте исходное имя хоста и `X-Forwarded-Proto: https` для HTTPS-запросов.
+Если на сервере есть общий Traefik в сети Docker, используйте
+`TRAEFIK_MODE=shared`. Приложение подключится к внешней сети
+`TRAEFIK_NETWORK` (по умолчанию `traefik`), через которую Traefik обращается к порту 8000.
+
+```bash
+task prod BUILD=1 TRAEFIK_MODE=shared
+```
+
+Для проверки до переключения DNS задайте `TRAEFIK_CERTRESOLVER=` в `.env`. Traefik отдаст
+свой сертификат по умолчанию. Когда публичное имя будет вести на сервер, укажите его resolver.
+
+`TRAEFIK_MODE=compose` поднимает Traefik с сертификатами Let's Encrypt рядом с приложением.
 
 ```bash
 task prod BUILD=1 TRAEFIK_MODE=compose
@@ -130,15 +141,20 @@ task prod BUILD=1 TRAEFIK_MODE=compose
 # dev: автоперезагрузка, отладка включена, порт проброшен на хост
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
-# прод за прокси, который у вас уже поднят
+# прод за прокси на хосте
 docker compose -f docker-compose.yml up -d --build
 
+# прод в общей сети Traefik
+docker compose -f docker-compose.yml -f docker-compose.traefik.shared.yml up -d --build
+
 # прод, поднимающий Traefik вместе с собой
-docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.traefik.compose.yml up -d --build
 ```
 
-Проду нужны настоящие значения `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DOMAIN` и
-`ACME_EMAIL`, а ещё доступные из интернета порты `80`/`443` для ACME-челленджа.
+Проду нужны настоящие значения `DJANGO_SECRET_KEY` и `DJANGO_ALLOWED_HOSTS`.
+Задайте `DOMAIN` в режимах `TRAEFIK_MODE=shared` и `TRAEFIK_MODE=compose`.
+Для своего Traefik в режиме `TRAEFIK_MODE=compose` задайте `ACME_EMAIL` и откройте
+порты `80` и `443` для интернета.
 
 Или вообще без Docker:
 

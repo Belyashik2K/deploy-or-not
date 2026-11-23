@@ -14,6 +14,11 @@ repos:
         types: [ python, yaml, toml, text ]
       - id: detect-private-key
       - id: check-yaml
+        exclude: ^docker-compose\.traefik\.shared\.yml$
+      - id: check-yaml
+        name: check Compose YAML syntax
+        files: ^docker-compose\.traefik\.shared\.yml$
+        args: [--unsafe]
       - id: check-toml
       - id: check-json
 

@@ -10,12 +10,3 @@ services:
     ports:
       - "127.0.0.1:${APP_PORT:-8000}:8000"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.deploy-or-not.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.deploy-or-not.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
-      - "traefik.http.routers.deploy-or-not.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
-      - "traefik.http.services.deploy-or-not.loadbalancer.server.port=8000"
-      - "traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.average=${RATE_LIMIT_AVERAGE:-10}"
-      - "traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.burst=${RATE_LIMIT_BURST:-20}"
-      - "traefik.http.routers.deploy-or-not.middlewares=deploy-or-not-ratelimit"

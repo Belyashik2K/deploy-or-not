@@ -116,10 +116,21 @@ task dev BUILD=1
 The API comes up on `http://localhost:8000` with the source directory mounted, so edits reload live.
 `task --list` shows the rest.
 
-`ENV=prod` switches to the production stack. It assumes a reverse proxy is already in place and just
-publishes the app on `127.0.0.1:${APP_PORT}` for it — nginx or anything else on the host proxies
-there, a Traefik container reads the labels instead. If the host has nothing yet,
-`TRAEFIK_MODE=compose` brings up a Traefik alongside the app, with Let's Encrypt certificates:
+`ENV=prod` switches to the production stack. By default it publishes the app on
+`127.0.0.1:${APP_PORT}` without Traefik labels. Configure routing and rate limiting in the host
+proxy, preserve the request hostname and forward `X-Forwarded-Proto: https` for HTTPS requests.
+If the server runs a shared Traefik on a Docker network, use `TRAEFIK_MODE=shared`.
+The app joins the external network `TRAEFIK_NETWORK` (default `traefik`) and Traefik reaches
+port 8000 inside Docker.
+
+```bash
+task prod BUILD=1 TRAEFIK_MODE=shared
+```
+
+For a probe before switching DNS, set `TRAEFIK_CERTRESOLVER=` in `.env` to use Traefik's default
+certificate. Set it back to the server's resolver when the public name points to the server.
+
+`TRAEFIK_MODE=compose` starts a Traefik alongside the app with Let's Encrypt certificates.
 
 ```bash
 task prod BUILD=1 TRAEFIK_MODE=compose
@@ -131,15 +142,20 @@ Plain compose works too:
 # dev: hot reload, debug on, port on the host
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
-# production behind a proxy you already run
+# production behind a host proxy
 docker compose -f docker-compose.yml up -d --build
 
+# production on the shared Traefik network
+docker compose -f docker-compose.yml -f docker-compose.traefik.shared.yml up -d --build
+
 # production with Traefik brought up alongside it
-docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.traefik.compose.yml up -d --build
 ```
 
-Production needs real values for `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DOMAIN` and
-`ACME_EMAIL`, plus ports `80`/`443` reachable from the internet for the ACME challenge.
+Production needs real values for `DJANGO_SECRET_KEY` and `DJANGO_ALLOWED_HOSTS`.
+Set `DOMAIN` when using `TRAEFIK_MODE=shared` or `TRAEFIK_MODE=compose`.
+When running your own Traefik with `TRAEFIK_MODE=compose`, set `ACME_EMAIL` and make ports
+`80` and `443` reachable from the internet.
 
 Or skip Docker entirely:
 

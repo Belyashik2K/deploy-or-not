@@ -14,6 +14,51 @@ env:
   UV_FROZEN: "1"
 
 jobs:
+  compose:
+    name: Compose modes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Task
+        uses: go-task/setup-task@v2
+        with:
+          version: "3.54.0"
+
+      - name: Check Task deployment modes
+        shell: bash
+        run: |
+          check_files() {
+            local expected=$1
+            shift
+            local rendered files
+            rendered=$(task --dry "$@" 2>&1)
+            files=$(grep -oE 'docker-compose[^ ]*\.yml' <<< "$rendered" | paste -sd ' ' -)
+            if [[ "$files" != "$expected" ]]; then
+              printf 'Expected files: %s\n%s\n' "$expected" "$rendered" >&2
+              return 1
+            fi
+          }
+
+          check_files 'docker-compose.yml docker-compose.dev.yml' dev
+          check_files 'docker-compose.yml' prod
+          check_files 'docker-compose.yml docker-compose.traefik.compose.yml' prod TRAEFIK_MODE=compose
+          check_files 'docker-compose.yml docker-compose.traefik.shared.yml' prod TRAEFIK_MODE=shared
+          check_files 'docker-compose.yml docker-compose.traefik.shared.yml' ps ENV=prod TRAEFIK_MODE=shared
+
+      - name: Check proxy settings in Compose configs
+        shell: bash
+        run: |
+          cp .env.example .env
+          docker compose -f docker-compose.yml config --format json |
+            jq -e 'all((.services.app.labels // {} | keys[]); startswith("traefik.") | not)'
+
+          route='.services.app.labels["traefik.http.routers.deploy-or-not.rule"] == "Host(`yourdomain.com`)"'
+          docker compose -f docker-compose.yml -f docker-compose.traefik.compose.yml config --format json |
+            jq -e "$route and (.services | has(\"traefik\"))"
+          docker compose -f docker-compose.yml -f docker-compose.traefik.shared.yml config --format json |
+            jq -e "$route and (.services.app.ports | length == 0) and .networks.traefik.external"
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

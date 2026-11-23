@@ -1,0 +1,14 @@
+services:
+  app:
+    extends:
+      file: docker-compose.traefik.labels.yml
+      service: app
+    ports: !reset []
+    networks: [traefik]
+    labels:
+      traefik.docker.network: ${TRAEFIK_NETWORK:-traefik}
+
+networks:
+  traefik:
+    name: ${TRAEFIK_NETWORK:-traefik}
+    external: true
