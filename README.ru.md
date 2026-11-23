@@ -4,7 +4,7 @@
 
 **Катить или не катить, вот в чём вопрос...**
 
-[![Живое API](https://img.shields.io/badge/live-donaas.belyashik2k.ru-2ea44f)](https://donaas.belyashik2k.ru/docs)
+[![Живое API](https://img.shields.io/badge/live-donaas.belyashik2k.dev-2ea44f)](https://donaas.belyashik2k.dev/docs)
 [![Python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-6.1-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Modern REST](https://img.shields.io/badge/Modern%20REST-0C4B33?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA4MCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTA4MCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMiA3MDQuMDJMMTQ1LjQ1OSA0NjYuMTlMMjc3Ljg4MyA3MDQuMDJMMTQ1LjQ1OSA5NDEuODQ5TDIgNzA0LjAyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE0NS40NTkgOTQxLjg0OUwyIDcwNC4wMkgyNzcuODgzTDE0NS40NTkgOTQxLjg0OVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik02NzguOTQ4IDcwNC4wMzVMMzQxLjIzIDEzOEwyMjcuMDcxIDMyOC4yNjRMNDM2LjM2MiA3MDQuMDM1TDMwMy4xNzcgOTQxLjg2NEg1MzYuMjVMNjc4Ljk0OCA3MDQuMDM1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTY3OC45MzcgNzA0LjAyNkg0MzYuMzVMMzAzLjE2NiA5NDEuODU2SDUzNi4yMzlMNjc4LjkzNyA3MDQuMDI2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEwNzguMTcgNzA0LjAzNUw3NDAuNDUxIDEzOEw2MjYuMjkzIDMyOC4yNjRMODM1LjU4MyA3MDQuMDM1TDcwMi4zOTkgOTQxLjg2NEg5MzUuNDcyTDEwNzguMTcgNzA0LjAzNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMDc4LjE3IDcwNC4wMzVIODM1LjU4M0w3MDIuMzk5IDk0MS44NjRIOTM1LjQ3MkwxMDc4LjE3IDcwNC4wMzVaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&color=35544A)](https://github.com/wemake-services/django-modern-rest)
@@ -49,7 +49,7 @@
 можно оправдаться (или нет) перед тимлидом.
 
 ```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?lang=ru&day=thursday"
+curl "https://donaas.belyashik2k.dev/api/v1/decide?lang=ru&day=thursday"
 ```
 
 ```json
@@ -77,8 +77,8 @@ curl "https://donaas.belyashik2k.ru/api/v1/decide?lang=ru&day=thursday"
 
 ### Онлайн
 
-- **Swagger UI:** <https://donaas.belyashik2k.ru/docs>
-- **OpenAPI-схема:** <https://donaas.belyashik2k.ru/docs/openapi.json>
+- **Swagger UI:** <https://donaas.belyashik2k.dev/docs>
+- **OpenAPI-схема:** <https://donaas.belyashik2k.dev/docs/openapi.json>
 
 Из Python, через [httpx](https://www.python-httpx.org/):
 
@@ -89,7 +89,7 @@ import httpx
 
 
 async def main() -> None:
-    async with httpx.AsyncClient(base_url="https://donaas.belyashik2k.ru") as client:
+    async with httpx.AsyncClient(base_url="https://donaas.belyashik2k.dev") as client:
         response = await client.get("/api/v1/decide", params={"day": "friday", "mood": "savage"})
         print(response.json()["message"])
 
@@ -128,6 +128,8 @@ task prod BUILD=1 TRAEFIK_MODE=shared
 
 Для проверки до переключения DNS задайте `TRAEFIK_CERTRESOLVER=` в `.env`. Traefik отдаст
 свой сертификат по умолчанию. Когда публичное имя будет вести на сервер, укажите его resolver.
+Для редиректа со старого имени задайте `REDIRECT_DOMAIN`. Traefik перенаправит запрос на
+`DOMAIN`, сохранив путь и параметры. Клиенты, использующие старый URL, должны следовать редиректу.
 
 `TRAEFIK_MODE=compose` поднимает Traefik с сертификатами Let's Encrypt рядом с приложением.
 
@@ -182,7 +184,7 @@ DJANGO_DEBUG=1 uv run python manage.py runserver
 
 Неизвестные значения дают `400`. Больше десяти запросов в секунду с клиента — `429`. CORS открыт,
 так что дёргать можно прямо из браузера. Остальное есть в
-[Swagger](https://donaas.belyashik2k.ru/docs).
+[Swagger](https://donaas.belyashik2k.dev/docs).
 
 ## Структура проекта
 

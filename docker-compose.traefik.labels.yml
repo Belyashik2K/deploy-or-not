@@ -10,3 +10,15 @@ services:
       traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.average: ${RATE_LIMIT_AVERAGE:-10}
       traefik.http.middlewares.deploy-or-not-ratelimit.ratelimit.burst: ${RATE_LIMIT_BURST:-20}
       traefik.http.routers.deploy-or-not.middlewares: deploy-or-not-ratelimit
+
+      # The main router wins when REDIRECT_DOMAIN is unset and both match DOMAIN.
+      traefik.http.routers.deploy-or-not-redirect.rule: "Host(`${REDIRECT_DOMAIN:-${DOMAIN}}`)"
+      traefik.http.routers.deploy-or-not-redirect.priority: "1"
+      traefik.http.routers.deploy-or-not-redirect.entrypoints: ${TRAEFIK_ENTRYPOINT:-websecure}
+      traefik.http.routers.deploy-or-not-redirect.tls: "true"
+      traefik.http.routers.deploy-or-not-redirect.tls.certresolver: ${TRAEFIK_CERTRESOLVER-letsencrypt}
+      traefik.http.routers.deploy-or-not-redirect.service: noop@internal
+      traefik.http.routers.deploy-or-not-redirect.middlewares: deploy-or-not-to-primary
+      traefik.http.middlewares.deploy-or-not-to-primary.redirectregex.regex: "^https?://[^/]+(.*)$"
+      traefik.http.middlewares.deploy-or-not-to-primary.redirectregex.replacement: "https://${DOMAIN}$${1}"
+      traefik.http.middlewares.deploy-or-not-to-primary.redirectregex.permanent: "true"

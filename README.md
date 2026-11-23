@@ -4,7 +4,7 @@
 
 **To deploy or not to deploy, that is the question...**
 
-[![Live API](https://img.shields.io/badge/live-donaas.belyashik2k.ru-2ea44f)](https://donaas.belyashik2k.ru/docs)
+[![Live API](https://img.shields.io/badge/live-donaas.belyashik2k.dev-2ea44f)](https://donaas.belyashik2k.dev/docs)
 [![Python](https://img.shields.io/badge/python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-6.1-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Modern REST](https://img.shields.io/badge/Modern%20REST-0C4B33?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA4MCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTA4MCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMiA3MDQuMDJMMTQ1LjQ1OSA0NjYuMTlMMjc3Ljg4MyA3MDQuMDJMMTQ1LjQ1OSA5NDEuODQ5TDIgNzA0LjAyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE0NS40NTkgOTQxLjg0OUwyIDcwNC4wMkgyNzcuODgzTDE0NS40NTkgOTQxLjg0OVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik02NzguOTQ4IDcwNC4wMzVMMzQxLjIzIDEzOEwyMjcuMDcxIDMyOC4yNjRMNDM2LjM2MiA3MDQuMDM1TDMwMy4xNzcgOTQxLjg2NEg1MzYuMjVMNjc4Ljk0OCA3MDQuMDM1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTY3OC45MzcgNzA0LjAyNkg0MzYuMzVMMzAzLjE2NiA5NDEuODU2SDUzNi4yMzlMNjc4LjkzNyA3MDQuMDI2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTEwNzguMTcgNzA0LjAzNUw3NDAuNDUxIDEzOEw2MjYuMjkzIDMyOC4yNjRMODM1LjU4MyA3MDQuMDM1TDcwMi4zOTkgOTQxLjg2NEg5MzUuNDcyTDEwNzguMTcgNzA0LjAzNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMDc4LjE3IDcwNC4wMzVIODM1LjU4M0w3MDIuMzk5IDk0MS44NjRIOTM1LjQ3MkwxMDc4LjE3IDcwNC4wMzVaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K&color=35544A)](https://github.com/wemake-services/django-modern-rest)
@@ -49,7 +49,7 @@ Send a request, get a verdict: true/false, the day it was judged by, and a phras
 your team lead. Or not.
 
 ```bash
-curl "https://donaas.belyashik2k.ru/api/v1/decide?day=thursday"
+curl "https://donaas.belyashik2k.dev/api/v1/decide?day=thursday"
 ```
 
 ```json
@@ -78,8 +78,8 @@ typed, no database, no state — just a coin flip with opinions.
 
 ### Online
 
-- **Swagger UI:** <https://donaas.belyashik2k.ru/docs>
-- **OpenAPI schema:** <https://donaas.belyashik2k.ru/docs/openapi.json>
+- **Swagger UI:** <https://donaas.belyashik2k.dev/docs>
+- **OpenAPI schema:** <https://donaas.belyashik2k.dev/docs/openapi.json>
 
 From Python, with [httpx](https://www.python-httpx.org/):
 
@@ -90,7 +90,7 @@ import httpx
 
 
 async def main() -> None:
-    async with httpx.AsyncClient(base_url="https://donaas.belyashik2k.ru") as client:
+    async with httpx.AsyncClient(base_url="https://donaas.belyashik2k.dev") as client:
         response = await client.get("/api/v1/decide", params={"day": "friday", "mood": "savage"})
         print(response.json()["message"])
 
@@ -129,6 +129,8 @@ task prod BUILD=1 TRAEFIK_MODE=shared
 
 For a probe before switching DNS, set `TRAEFIK_CERTRESOLVER=` in `.env` to use Traefik's default
 certificate. Set it back to the server's resolver when the public name points to the server.
+To redirect a legacy hostname, set `REDIRECT_DOMAIN`. Traefik returns a permanent redirect
+to `DOMAIN` with the original path and query. API clients using the legacy URL need to follow it.
 
 `TRAEFIK_MODE=compose` starts a Traefik alongside the app with Let's Encrypt certificates.
 
@@ -183,7 +185,7 @@ DJANGO_DEBUG=1 uv run python manage.py runserver
 
 Unknown values give `400`. Over ten requests a second per client gives `429`. CORS is open, so this
 works straight from a browser. Everything else is in
-[Swagger](https://donaas.belyashik2k.ru/docs).
+[Swagger](https://donaas.belyashik2k.dev/docs).
 
 ## Project structure
 
